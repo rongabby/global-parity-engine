@@ -15,9 +15,20 @@ if (!defined('ABSPATH')) {
 
 class GoogleEarthIntegration {
     
+    private static $instance = null;
     private $markers = array();
     
-    public function __construct() {
+    /**
+     * Get singleton instance
+     */
+    public static function get_instance() {
+        if (self::$instance === null) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
+    
+    private function __construct() {
         add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'));
         add_shortcode('google_earth_map', array($this, 'render_map_shortcode'));
         $this->calculate_markers();
@@ -181,7 +192,7 @@ class GoogleEarthIntegration {
 }
 
 // Initialize the plugin
-new GoogleEarthIntegration();
+GoogleEarthIntegration::get_instance();
 
 // Add admin menu for KML download
 add_action('admin_menu', 'gei_add_admin_menu');
@@ -204,7 +215,7 @@ function gei_admin_page() {
             wp_die('Security check failed');
         }
         
-        $plugin = new GoogleEarthIntegration();
+        $plugin = GoogleEarthIntegration::get_instance();
         $kml = $plugin->generate_kml();
         
         header('Content-Type: application/vnd.google-earth.kml+xml');
@@ -230,7 +241,7 @@ function gei_admin_page() {
             </thead>
             <tbody>
                 <?php
-                $plugin = new GoogleEarthIntegration();
+                $plugin = GoogleEarthIntegration::get_instance();
                 $markers = $plugin->get_markers();
                 
                 foreach ($markers as $marker):
