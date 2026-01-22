@@ -24,6 +24,14 @@ class GoogleEarthIntegration {
     }
     
     /**
+     * Get markers array
+     * @return array
+     */
+    public function get_markers() {
+        return $this->markers;
+    }
+    
+    /**
      * Calculate geographic markers based on specifications
      */
     private function calculate_markers() {
@@ -84,10 +92,15 @@ class GoogleEarthIntegration {
      * Enqueue JavaScript and CSS files
      */
     public function enqueue_scripts() {
+        // Get API key from WordPress options (set in Settings > Google Earth)
+        // For security, store your API key using: update_option('gei_google_maps_api_key', 'your-key-here');
+        // Or use environment variable: define('GEI_GOOGLE_MAPS_API_KEY', getenv('GOOGLE_MAPS_API_KEY'));
+        $api_key = get_option('gei_google_maps_api_key', 'YOUR_API_KEY_HERE');
+        
         // Google Maps JavaScript API
         wp_enqueue_script(
             'google-maps',
-            'https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY_HERE',
+            'https://maps.googleapis.com/maps/api/js?key=' . esc_attr($api_key),
             array(),
             null,
             true
@@ -184,7 +197,13 @@ function gei_add_admin_menu() {
 }
 
 function gei_admin_page() {
+    // Handle KML download with nonce verification
     if (isset($_GET['download_kml'])) {
+        // Verify nonce for security
+        if (!isset($_GET['_wpnonce']) || !wp_verify_nonce($_GET['_wpnonce'], 'gei_download_kml')) {
+            wp_die('Security check failed');
+        }
+        
         $plugin = new GoogleEarthIntegration();
         $kml = $plugin->generate_kml();
         
@@ -212,10 +231,7 @@ function gei_admin_page() {
             <tbody>
                 <?php
                 $plugin = new GoogleEarthIntegration();
-                $reflection = new ReflectionClass($plugin);
-                $property = $reflection->getProperty('markers');
-                $property->setAccessible(true);
-                $markers = $property->getValue($plugin);
+                $markers = $plugin->get_markers();
                 
                 foreach ($markers as $marker):
                 ?>
@@ -231,7 +247,7 @@ function gei_admin_page() {
         
         <h2>Export to Google Earth</h2>
         <p>
-            <a href="?page=google-earth-integration&download_kml=1" class="button button-primary">
+            <a href="<?php echo wp_nonce_url(admin_url('admin.php?page=google-earth-integration&download_kml=1'), 'gei_download_kml'); ?>" class="button button-primary">
                 Download KML File
             </a>
         </p>
