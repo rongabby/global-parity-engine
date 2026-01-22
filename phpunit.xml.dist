@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.5/phpunit.xsd"
+         bootstrap="tests/phpunit/bootstrap.php"
+         colors="true"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         stopOnFailure="false"
+         verbose="true">
+
+    <testsuites>
+        <testsuite name="Global Parity Engine Test Suite">
+            <directory suffix="Test.php">tests/phpunit</directory>
+        </testsuite>
+        <testsuite name="Global Parity Data Plugin Tests">
+            <directory suffix="Test.php">tests/phpunit/ParityData</directory>
+        </testsuite>
+        <testsuite name="Google Earth Integration Tests">
+            <directory suffix="Test.php">tests/phpunit/GoogleEarth</directory>
+        </testsuite>
+    </testsuites>
+
+    <coverage processUncoveredFiles="true">
+        <include>
+            <directory suffix=".php">plugins/global-parity-data</directory>
+            <directory suffix=".php">plugins/google-earth-integration</directory>
+        </include>
+        <exclude>
+            <directory suffix=".php">plugins/*/vendor</directory>
+            <directory suffix=".php">plugins/*/tests</directory>
+        </exclude>
+        <report>
+            <html outputDirectory="coverage" lowUpperBound="35" highLowerBound="70"/>
+            <text outputFile="php://stdout" showUncoveredFiles="false"/>
+        </report>
+    </coverage>
+
+    <php>
+        <env name="WP_TESTS_DIR" value="/tmp/wordpress-tests-lib"/>
+        <env name="WP_CORE_DIR" value="/tmp/wordpress"/>
+        <const name="WP_DEBUG" value="true"/>
+        <const name="WP_DEBUG_LOG" value="false"/>
+        <const name="WP_DEBUG_DISPLAY" value="true"/>
+    </php>
+
+    <logging>
+        <junit outputFile="phpunit-report.xml"/>
+    </logging>
+</phpunit>
