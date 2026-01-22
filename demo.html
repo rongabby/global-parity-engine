@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Parity Engine - Google Earth Integration Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        #map {
+            width: 100%;
+            height: 600px;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+            margin-bottom: 30px;
+        }
+        
+        .markers-info {
+            background: #f9f9f9;
+            padding: 25px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        
+        .markers-info h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+        
+        .marker-item {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-radius: 4px;
+        }
+        
+        .marker-item h3 {
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+        
+        .marker-item .coords {
+            font-weight: bold;
+            color: #764ba2;
+            margin: 5px 0;
+        }
+        
+        .marker-item .description {
+            color: #666;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+        
+        .download-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: #e8f4f8;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .download-section h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            transition: transform 0.2s;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .info-box {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+        
+        .info-box strong {
+            color: #856404;
+        }
+        
+        footer {
+            background: #f5f5f5;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌍 Global Parity Engine</h1>
+            <p>Google Earth Integration - Geographic Marker Visualization</p>
+            <p style="font-size: 0.9em; margin-top: 10px;">Google ID: rongabby@gmail.com</p>
+        </header>
+        
+        <div class="content">
+            <div class="info-box">
+                <strong>⚠️ Note:</strong> This demo requires a Google Maps API key. Replace 'YOUR_API_KEY_HERE' in the script source with a valid API key to see the interactive map.
+            </div>
+            
+            <div id="map"></div>
+            
+            <div class="markers-info">
+                <h2>📍 Geographic Markers</h2>
+                
+                <div class="marker-item">
+                    <h3>1. North Pole Start</h3>
+                    <div class="coords">90.0° N, 0.0° E</div>
+                    <div class="description">Starting point at 90° N, 0° E - The geographic North Pole</div>
+                </div>
+                
+                <div class="marker-item">
+                    <h3>2. West of Japan</h3>
+                    <div class="coords">35.0° N, 130.0° E</div>
+                    <div class="description">Longitude west of Japan at 130° E, respecting Japan's water rights and airspace. This represents the western boundary of Japanese territorial waters in the Sea of Japan.</div>
+                </div>
+                
+                <div class="marker-item">
+                    <h3>3. Marker 1 (130° + 120°)</h3>
+                    <div class="coords">35.0° N, -110.0° E</div>
+                    <div class="description">First marker at -110° E (or 250° E before normalization) - 120° east of Japan's western boundary, rounded to the next highest longitude</div>
+                </div>
+                
+                <div class="marker-item">
+                    <h3>4. Marker 2 (250° + 120°)</h3>
+                    <div class="coords">35.0° N, 10.0° E</div>
+                    <div class="description">Second marker at 10° E (or 370° E before normalization) - Another 120° east, completing 240° of travel from Japan's west</div>
+                </div>
+                
+                <div class="marker-item">
+                    <h3>5. Japan (Tokyo)</h3>
+                    <div class="coords">35.6762° N, 139.6503° E</div>
+                    <div class="description">Final marker at Japan (Tokyo) at 139.65° E - The capital city of Japan, adjusted for cultural and political significance</div>
+                </div>
+            </div>
+            
+            <div class="download-section">
+                <h2>📥 Export to Google Earth</h2>
+                <p style="margin-bottom: 15px;">Download the KML file to view these markers in Google Earth</p>
+                <button class="btn" onclick="downloadKML()">Download KML File</button>
+            </div>
+        </div>
+        
+        <footer>
+            <p><strong>Global Parity Engine</strong> - WordPress Google Earth Integration</p>
+            <p>Version 1.0.0 | License: GPL v2 or later</p>
+        </footer>
+    </div>
+    
+    <script>
+        // Marker data
+        const markers = [
+            {name: 'North Pole Start', lat: 90.0, lng: 0.0, description: 'Starting point at 90° N, 0° E'},
+            {name: 'West of Japan', lat: 35.0, lng: 130.0, description: 'Longitude west of Japan at 130° E'},
+            {name: 'Marker 1 (130° + 120°)', lat: 35.0, lng: -110.0, description: 'First marker at -110° E (120° east of Japan west)'},
+            {name: 'Marker 2 (250° + 120°)', lat: 35.0, lng: 10.0, description: 'Second marker at 10° E (240° more from west Japan)'},
+            {name: 'Japan (Tokyo)', lat: 35.6762, lng: 139.6503, description: 'Final marker at Japan (Tokyo) at 139.65° E'}
+        ];
+        
+        // Initialize map
+        function initMap() {
+            const mapCenter = {lat: 35.0, lng: 139.0};
+            
+            const map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 3,
+                center: mapCenter,
+                mapTypeId: 'terrain'
+            });
+            
+            const infoWindow = new google.maps.InfoWindow();
+            
+            // Add markers
+            markers.forEach((markerData, index) => {
+                const marker = new google.maps.Marker({
+                    position: {lat: markerData.lat, lng: markerData.lng},
+                    map: map,
+                    title: markerData.name,
+                    label: (index + 1).toString(),
+                    animation: google.maps.Animation.DROP
+                });
+                
+                marker.addListener('click', () => {
+                    const content = `
+                        <div style="padding: 10px;">
+                            <h3 style="margin-top: 0; color: #667eea;">${markerData.name}</h3>
+                            <p><strong>Coordinates:</strong> ${markerData.lat}° N, ${markerData.lng}° E</p>
+                            <p>${markerData.description}</p>
+                        </div>
+                    `;
+                    infoWindow.setContent(content);
+                    infoWindow.open(map, marker);
+                });
+            });
+            
+            // Draw polyline
+            const path = markers.map(m => ({lat: m.lat, lng: m.lng}));
+            const polyline = new google.maps.Polyline({
+                path: path,
+                geodesic: true,
+                strokeColor: '#667eea',
+                strokeOpacity: 0.8,
+                strokeWeight: 3
+            });
+            polyline.setMap(map);
+        }
+        
+        // Download KML
+        function downloadKML() {
+            let kml = `<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document>
+<name>Global Parity Engine Markers</name>
+<description>Geographic markers for global parity analysis</description>
+`;
+            
+            markers.forEach(marker => {
+                kml += `<Placemark>
+<name>${marker.name}</name>
+<description>${marker.description}</description>
+<Point>
+<coordinates>${marker.lng},${marker.lat},0</coordinates>
+</Point>
+</Placemark>
+`;
+            });
+            
+            kml += `</Document>
+</kml>`;
+            
+            const blob = new Blob([kml], {type: 'application/vnd.google-earth.kml+xml'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'global-parity-markers.kml';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+    </script>
+    
+    <!-- Note: Replace YOUR_API_KEY_HERE with actual Google Maps API key -->
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY_HERE&callback=initMap">
+    </script>
+</body>
+</html>

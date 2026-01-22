@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document>
+<name>Global Parity Engine Markers</name>
+<description>Geographic markers for global parity analysis - Google ID: rongabby@gmail.com</description>
+<Style id="northPoleStyle">
+<IconStyle>
+<color>ff0000ff</color>
+<scale>1.2</scale>
+<Icon>
+<href>http://maps.google.com/mapfiles/kml/paddle/red-stars.png</href>
+</Icon>
+</IconStyle>
+</Style>
+<Style id="markerStyle">
+<IconStyle>
+<color>ff00ff00</color>
+<scale>1.1</scale>
+<Icon>
+<href>http://maps.google.com/mapfiles/kml/paddle/grn-circle.png</href>
+</Icon>
+</IconStyle>
+</Style>
+<Style id="japanStyle">
+<IconStyle>
+<color>ffff0000</color>
+<scale>1.2</scale>
+<Icon>
+<href>http://maps.google.com/mapfiles/kml/paddle/blu-stars.png</href>
+</Icon>
+</IconStyle>
+</Style>
+<Placemark>
+<name>1. North Pole Start</name>
+<description><![CDATA[
+<h3>Starting Point</h3>
+<p><b>Coordinates:</b> 90° N, 0° E</p>
+<p>The geographic North Pole - starting point for the Global Parity Engine analysis.</p>
+<p>This is the northernmost point on Earth, where all longitude lines converge.</p>
+]]></description>
+<styleUrl>#northPoleStyle</styleUrl>
+<Point>
+<coordinates>0.0,90.0,0</coordinates>
+</Point>
+</Placemark>
+<Placemark>
+<name>2. West of Japan</name>
+<description><![CDATA[
+<h3>Japanese Western Waters</h3>
+<p><b>Coordinates:</b> 35° N, 130° E</p>
+<p>Longitude west of Japan at 130° E</p>
+<p>This point respects Japan's territorial waters and airspace in the Sea of Japan.</p>
+<p>Japan's exclusive economic zone (EEZ) extends 200 nautical miles from its coastline.</p>
+]]></description>
+<styleUrl>#markerStyle</styleUrl>
+<Point>
+<coordinates>130.0,35.0,0</coordinates>
+</Point>
+</Placemark>
+<Placemark>
+<name>3. Marker 1 (130° + 120°)</name>
+<description><![CDATA[
+<h3>First Calculated Marker</h3>
+<p><b>Coordinates:</b> 35° N, -110° E (250° E normalized)</p>
+<p>First marker at -110° E (or 250° E before normalization)</p>
+<p>Located 120° east of Japan's western boundary, rounded to the next highest longitude.</p>
+<p>This point is in the Pacific Ocean, west of North America.</p>
+]]></description>
+<styleUrl>#markerStyle</styleUrl>
+<Point>
+<coordinates>-110.0,35.0,0</coordinates>
+</Point>
+</Placemark>
+<Placemark>
+<name>4. Marker 2 (250° + 120°)</name>
+<description><![CDATA[
+<h3>Second Calculated Marker</h3>
+<p><b>Coordinates:</b> 35° N, 10° E (370° E normalized)</p>
+<p>Second marker at 10° E (or 370° E before normalization)</p>
+<p>Another 120° east, completing 240° of travel from Japan's western waters.</p>
+<p>This point is located in the Mediterranean region, accounting for cultural and political factors.</p>
+]]></description>
+<styleUrl>#markerStyle</styleUrl>
+<Point>
+<coordinates>10.0,35.0,0</coordinates>
+</Point>
+</Placemark>
+<Placemark>
+<name>5. Japan (Tokyo)</name>
+<description><![CDATA[
+<h3>Final Marker - Tokyo, Japan</h3>
+<p><b>Coordinates:</b> 35.6762° N, 139.6503° E</p>
+<p>Final marker at Japan (Tokyo) at 139.65° E</p>
+<p>The capital city of Japan, representing the conclusion of the geographic analysis.</p>
+<p>Tokyo is one of the world's most populous metropolitan areas and a major global financial center.</p>
+<p>This marker is adjusted to account for cultural and political significance.</p>
+]]></description>
+<styleUrl>#japanStyle</styleUrl>
+<Point>
+<coordinates>139.6503,35.6762,0</coordinates>
+</Point>
+</Placemark>
+<Placemark>
+<name>Connection Path</name>
+<description>Geodesic path connecting all markers</description>
+<Style>
+<LineStyle>
+<color>ff0000ff</color>
+<width>3</width>
+</LineStyle>
+</Style>
+<LineString>
+<tessellate>1</tessellate>
+<coordinates>
+0.0,90.0,0
+130.0,35.0,0
+-110.0,35.0,0
+10.0,35.0,0
+139.6503,35.6762,0
+</coordinates>
+</LineString>
+</Placemark>
+</Document>
+</kml>
