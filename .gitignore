@@ -1,0 +1,24 @@
+# Test files
+test-coordinates.php
+
+# WordPress specific
+wp-content/uploads/
+wp-content/cache/
+wp-content/backup-db/
+wp-content/advanced-cache.php
+wp-content/wp-cache-config.php
+wp-content/upgrade/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Dependencies (if using npm for development)
+node_modules/
+package-lock.json
