@@ -249,10 +249,10 @@ function gpe_ajax_get_parity_data() {
 	$data = array(
 		'id'               => $post_id,
 		'title'            => get_the_title( $post_id ),
-		'parity_score'     => floatval( get_post_meta( $post_id, '_parity_score', true ) ),
-		'parity_index'     => floatval( get_post_meta( $post_id, '_parity_index', true ) ),
-		'current_value'    => floatval( get_post_meta( $post_id, '_current_value', true ) ),
-		'target_value'     => floatval( get_post_meta( $post_id, '_target_value', true ) ),
+		'parity_score'     => gpe_get_meta_float( $post_id, '_parity_score' ),
+		'parity_index'     => gpe_get_meta_float( $post_id, '_parity_index' ),
+		'current_value'    => gpe_get_meta_float( $post_id, '_current_value' ),
+		'target_value'     => gpe_get_meta_float( $post_id, '_target_value' ),
 		'measurement_unit' => get_post_meta( $post_id, '_measurement_unit', true ),
 	);
 	
@@ -260,6 +260,24 @@ function gpe_ajax_get_parity_data() {
 }
 add_action( 'wp_ajax_gpe_get_parity_data', 'gpe_ajax_get_parity_data' );
 add_action( 'wp_ajax_nopriv_gpe_get_parity_data', 'gpe_ajax_get_parity_data' );
+
+// Helper function to get float meta or null
+function gpe_get_meta_float( $post_id, $meta_key ) {
+	$value = get_post_meta( $post_id, $meta_key, true );
+	if ( '' === $value || false === $value ) {
+		return null;
+	}
+	return floatval( $value );
+}
+
+// Helper function to get int meta or null
+function gpe_get_meta_int( $post_id, $meta_key ) {
+	$value = get_post_meta( $post_id, $meta_key, true );
+	if ( '' === $value || false === $value ) {
+		return null;
+	}
+	return intval( $value );
+}
 
 // Example 7: Custom query to get top performing entries
 function gpe_get_top_parity_entries( $limit = 10 ) {

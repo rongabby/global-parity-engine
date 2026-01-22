@@ -366,21 +366,38 @@ class Global_Parity_Engine {
 
 		// Save parity metrics.
 		if ( isset( $_POST['parity_metrics_nonce_field'] ) && wp_verify_nonce( $_POST['parity_metrics_nonce_field'], 'parity_metrics_nonce' ) ) {
-			$fields = array( 'parity_score', 'parity_index', 'target_value', 'current_value', 'measurement_unit' );
-			foreach ( $fields as $field ) {
-				if ( isset( $_POST[ $field ] ) ) {
-					update_post_meta( $post_id, '_' . $field, sanitize_text_field( $_POST[ $field ] ) );
+			// Numeric fields.
+			$numeric_fields = array( 'parity_score', 'parity_index', 'target_value', 'current_value' );
+			foreach ( $numeric_fields as $field ) {
+				if ( isset( $_POST[ $field ] ) && '' !== $_POST[ $field ] ) {
+					update_post_meta( $post_id, '_' . $field, floatval( $_POST[ $field ] ) );
 				}
+			}
+			// Text field.
+			if ( isset( $_POST['measurement_unit'] ) ) {
+				update_post_meta( $post_id, '_measurement_unit', sanitize_text_field( $_POST['measurement_unit'] ) );
 			}
 		}
 
 		// Save parity statistics.
 		if ( isset( $_POST['parity_statistics_nonce_field'] ) && wp_verify_nonce( $_POST['parity_statistics_nonce_field'], 'parity_statistics_nonce' ) ) {
-			$fields = array( 'data_source', 'collection_date', 'sample_size', 'confidence_level', 'year' );
-			foreach ( $fields as $field ) {
-				if ( isset( $_POST[ $field ] ) ) {
-					update_post_meta( $post_id, '_' . $field, sanitize_text_field( $_POST[ $field ] ) );
-				}
+			// Text fields.
+			if ( isset( $_POST['data_source'] ) ) {
+				update_post_meta( $post_id, '_data_source', sanitize_text_field( $_POST['data_source'] ) );
+			}
+			if ( isset( $_POST['collection_date'] ) ) {
+				update_post_meta( $post_id, '_collection_date', sanitize_text_field( $_POST['collection_date'] ) );
+			}
+			// Integer fields.
+			if ( isset( $_POST['sample_size'] ) && '' !== $_POST['sample_size'] ) {
+				update_post_meta( $post_id, '_sample_size', intval( $_POST['sample_size'] ) );
+			}
+			if ( isset( $_POST['year'] ) && '' !== $_POST['year'] ) {
+				update_post_meta( $post_id, '_year', intval( $_POST['year'] ) );
+			}
+			// Float field.
+			if ( isset( $_POST['confidence_level'] ) && '' !== $_POST['confidence_level'] ) {
+				update_post_meta( $post_id, '_confidence_level', floatval( $_POST['confidence_level'] ) );
 			}
 		}
 	}
@@ -420,10 +437,13 @@ class Global_Parity_Engine {
 				array(
 					'get_callback'    => function( $object ) use ( $field_name ) {
 						$value = get_post_meta( $object['id'], '_' . $field_name, true );
-						if ( in_array( $field_name, array( 'parity_score', 'parity_index', 'current_value', 'target_value' ), true ) ) {
-							return $value ? floatval( $value ) : null;
+						if ( '' === $value || false === $value ) {
+							return null;
 						}
-						return $value ? $value : null;
+						if ( in_array( $field_name, array( 'parity_score', 'parity_index', 'current_value', 'target_value' ), true ) ) {
+							return floatval( $value );
+						}
+						return $value;
 					},
 					'update_callback' => function( $value, $object ) use ( $field_name ) {
 						if ( in_array( $field_name, array( 'parity_score', 'parity_index', 'current_value', 'target_value' ), true ) ) {
@@ -472,12 +492,15 @@ class Global_Parity_Engine {
 				array(
 					'get_callback'    => function( $object ) use ( $field_name ) {
 						$value = get_post_meta( $object['id'], '_' . $field_name, true );
-						if ( 'year' === $field_name || 'sample_size' === $field_name ) {
-							return $value ? intval( $value ) : null;
-						} elseif ( 'confidence_level' === $field_name ) {
-							return $value ? floatval( $value ) : null;
+						if ( '' === $value || false === $value ) {
+							return null;
 						}
-						return $value ? $value : null;
+						if ( 'year' === $field_name || 'sample_size' === $field_name ) {
+							return intval( $value );
+						} elseif ( 'confidence_level' === $field_name ) {
+							return floatval( $value );
+						}
+						return $value;
 					},
 					'update_callback' => function( $value, $object ) use ( $field_name ) {
 						if ( 'year' === $field_name || 'sample_size' === $field_name ) {
@@ -645,12 +668,12 @@ class Global_Parity_Engine {
 				$results[] = array(
 					'id'               => $post_id,
 					'title'            => get_the_title(),
-					'parity_score'     => floatval( get_post_meta( $post_id, '_parity_score', true ) ),
-					'parity_index'     => floatval( get_post_meta( $post_id, '_parity_index', true ) ),
-					'current_value'    => floatval( get_post_meta( $post_id, '_current_value', true ) ),
-					'target_value'     => floatval( get_post_meta( $post_id, '_target_value', true ) ),
+					'parity_score'     => $this->get_meta_float( $post_id, '_parity_score' ),
+					'parity_index'     => $this->get_meta_float( $post_id, '_parity_index' ),
+					'current_value'    => $this->get_meta_float( $post_id, '_current_value' ),
+					'target_value'     => $this->get_meta_float( $post_id, '_target_value' ),
 					'measurement_unit' => get_post_meta( $post_id, '_measurement_unit', true ),
-					'year'             => intval( get_post_meta( $post_id, '_year', true ) ),
+					'year'             => $this->get_meta_int( $post_id, '_year' ),
 					'link'             => get_permalink(),
 				);
 			}
@@ -685,12 +708,12 @@ class Global_Parity_Engine {
 				$comparison[] = array(
 					'id'               => $id,
 					'title'            => get_the_title( $id ),
-					'parity_score'     => floatval( get_post_meta( $id, '_parity_score', true ) ),
-					'parity_index'     => floatval( get_post_meta( $id, '_parity_index', true ) ),
-					'current_value'    => floatval( get_post_meta( $id, '_current_value', true ) ),
-					'target_value'     => floatval( get_post_meta( $id, '_target_value', true ) ),
+					'parity_score'     => $this->get_meta_float( $id, '_parity_score' ),
+					'parity_index'     => $this->get_meta_float( $id, '_parity_index' ),
+					'current_value'    => $this->get_meta_float( $id, '_current_value' ),
+					'target_value'     => $this->get_meta_float( $id, '_target_value' ),
 					'measurement_unit' => get_post_meta( $id, '_measurement_unit', true ),
-					'year'             => intval( get_post_meta( $id, '_year', true ) ),
+					'year'             => $this->get_meta_int( $id, '_year' ),
 					'regions'          => wp_get_post_terms( $id, 'parity_region', array( 'fields' => 'names' ) ),
 					'categories'       => wp_get_post_terms( $id, 'parity_category', array( 'fields' => 'names' ) ),
 				);
@@ -704,6 +727,36 @@ class Global_Parity_Engine {
 			),
 			200
 		);
+	}
+
+	/**
+	 * Get float meta value or null.
+	 *
+	 * @param int    $post_id Post ID.
+	 * @param string $meta_key Meta key.
+	 * @return float|null Float value or null if empty.
+	 */
+	private function get_meta_float( $post_id, $meta_key ) {
+		$value = get_post_meta( $post_id, $meta_key, true );
+		if ( '' === $value || false === $value ) {
+			return null;
+		}
+		return floatval( $value );
+	}
+
+	/**
+	 * Get integer meta value or null.
+	 *
+	 * @param int    $post_id Post ID.
+	 * @param string $meta_key Meta key.
+	 * @return int|null Integer value or null if empty.
+	 */
+	private function get_meta_int( $post_id, $meta_key ) {
+		$value = get_post_meta( $post_id, $meta_key, true );
+		if ( '' === $value || false === $value ) {
+			return null;
+		}
+		return intval( $value );
 	}
 }
 
